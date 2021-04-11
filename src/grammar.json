@@ -1,0 +1,3242 @@
+{
+  "name": "YOUR_LANGUAGE_NAME",
+  "rules": {
+    "SourceFile": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "statement",
+          "content": {
+            "type": "REPEAT",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "LeadingStatement"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "DelimiterStatement"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "statement",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "TrailingStatement"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "DelimiterStatement"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "Statement": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "BinLogStatement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "CreateSchemaStatement"
+        }
+      ]
+    },
+    "BinLogStatement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "binLogToken",
+          "content": {
+            "type": "SYMBOL",
+            "name": "BINLOG"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "str",
+          "content": {
+            "type": "SYMBOL",
+            "name": "StringLiteral"
+          }
+        }
+      ]
+    },
+    "CreateSchemaStatement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "createToken",
+          "content": {
+            "type": "SYMBOL",
+            "name": "CREATE"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "schemaToken",
+          "content": {
+            "type": "SYMBOL",
+            "name": "Schema"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "ifNotExists",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "IfNotExists"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "identifier",
+          "content": {
+            "type": "SYMBOL",
+            "name": "Identifier"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "createSchemaOptionList",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "CreateSchemaOptionList"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "CreateSchemaOptionList": {
+      "type": "FIELD",
+      "name": "item",
+      "content": {
+        "type": "REPEAT1",
+        "content": {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "DefaultCharacterSet"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "DefaultCollate"
+            }
+          ]
+        }
+      }
+    },
+    "DefaultCharacterSet": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "defaultToken",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "DEFAULT"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "characterSetToken",
+          "content": {
+            "type": "SYMBOL",
+            "name": "CharSet"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "equalToken",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "Equal"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "characterSetName",
+          "content": {
+            "type": "SYMBOL",
+            "name": "CharacterSetNameOrDefault"
+          }
+        }
+      ]
+    },
+    "DefaultCollate": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "defaultToken",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "DEFAULT"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "collateToken",
+          "content": {
+            "type": "SYMBOL",
+            "name": "COLLATE"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "equalToken",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "Equal"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "collationName",
+          "content": {
+            "type": "SYMBOL",
+            "name": "CollationNameOrDefault"
+          }
+        }
+      ]
+    },
+    "CharacterSetNameOrDefault": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "DEFAULT"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "BINARY"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "Identifier"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "StringLiteral"
+        }
+      ]
+    },
+    "CollationNameOrDefault": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "DEFAULT"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "Identifier"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "StringLiteral"
+        }
+      ]
+    },
+    "CharSet": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "CHARACTER"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "SET"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "CHARSET"
+        }
+      ]
+    },
+    "Schema": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "DATABASE"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "SCHEMA"
+        }
+      ]
+    },
+    "IfNotExists": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "ifToken",
+          "content": {
+            "type": "SYMBOL",
+            "name": "IF"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "notToken",
+          "content": {
+            "type": "SYMBOL",
+            "name": "NOT"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "existsToken",
+          "content": {
+            "type": "SYMBOL",
+            "name": "EXISTS"
+          }
+        }
+      ]
+    },
+    "LeadingStatement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "statement",
+          "content": {
+            "type": "SYMBOL",
+            "name": "Statement"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "FIELD",
+                  "name": "semiColonToken",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "SemiColon"
+                  }
+                },
+                {
+                  "type": "FIELD",
+                  "name": "customDelimiter",
+                  "content": {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "CustomDelimiter"
+                      },
+                      {
+                        "type": "BLANK"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "FIELD",
+              "name": "customDelimiter",
+              "content": {
+                "type": "SYMBOL",
+                "name": "CustomDelimiter"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "TrailingStatement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "statement",
+          "content": {
+            "type": "SYMBOL",
+            "name": "Statement"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "semiColonToken",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "SemiColon"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "customDelimiter",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "CustomDelimiter"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "DelimiterStatement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "delimiterStart",
+          "content": {
+            "type": "SYMBOL",
+            "name": "DELIMITER_STATEMENT"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "customDelimiter",
+          "content": {
+            "type": "SYMBOL",
+            "name": "CustomDelimiter"
+          }
+        }
+      ]
+    }
+  },
+  "extras": [
+    {
+      "type": "SYMBOL",
+      "name": "SingleLineComment"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MultiLineComment"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ExecutionComment"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "WhiteSpace"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LineBreak"
+    }
+  ],
+  "conflicts": [],
+  "precedences": [],
+  "externals": [
+    {
+      "type": "SYMBOL",
+      "name": "START_OF_RESERVED_KEYWORD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ACCESSIBLE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ADD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ALL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ALTER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ANALYZE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "AND"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "AS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ASC"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ASENSITIVE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BEFORE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BETWEEN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BIGINT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BINARY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BLOB"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BOTH"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CALL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CASCADE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CASE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CHANGE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CHAR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CHARACTER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CHECK"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "COLLATE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "COLUMN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CONDITION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CONSTRAINT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CONTINUE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CONVERT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CREATE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CROSS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CURRENT_DATE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CURRENT_TIME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CURRENT_TIMESTAMP"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CURRENT_USER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CURSOR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DATABASE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DATABASES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DAY_HOUR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DAY_MICROSECOND"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DAY_MINUTE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DAY_SECOND"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DEC"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DECIMAL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DECLARE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DEFAULT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DELAYED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DELETE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DESC"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DESCRIBE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DETERMINISTIC"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DISTINCT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DISTINCTROW"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DIV"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DOUBLE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DROP"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DUAL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "EACH"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ELSE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ELSEIF"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ENCLOSED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ESCAPED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "EXISTS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "EXIT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "EXPLAIN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FALSE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FETCH"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FLOAT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FLOAT4"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FLOAT8"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FOR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FORCE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FOREIGN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FROM"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FULLTEXT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "GENERATED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "GET"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "GRANT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "GROUP"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "HAVING"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "HIGH_PRIORITY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "HOUR_MICROSECOND"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "HOUR_MINUTE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "HOUR_SECOND"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "IF"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "IGNORE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "IN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INDEX"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INFILE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INNER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INOUT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INSENSITIVE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INSERT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INT1"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INT2"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INT3"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INT4"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INT8"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INTEGER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INTERVAL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INTO"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "IO_AFTER_GTIDS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "IO_BEFORE_GTIDS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "IS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ITERATE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "JOIN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "KEY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "KEYS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "KILL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LEADING"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LEAVE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LEFT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LIKE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LIMIT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LINEAR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LINES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LOAD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LOCALTIME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LOCALTIMESTAMP"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LOCK"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LONG"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LONGBLOB"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LONGTEXT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LOOP"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LOW_PRIORITY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_BIND"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_SSL_VERIFY_SERVER_CERT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MATCH"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MAXVALUE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MEDIUMBLOB"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MEDIUMINT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MEDIUMTEXT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MIDDLEINT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MINUTE_MICROSECOND"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MINUTE_SECOND"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MOD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MODIFIES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NATURAL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NOT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NO_WRITE_TO_BINLOG"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_NULL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NUMERIC"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ON"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OPTIMIZE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OPTIMIZER_COSTS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OPTION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OPTIONALLY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ORDER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OUT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OUTER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OUTFILE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PARTITION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PRECISION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PRIMARY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PROCEDURE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PURGE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RANGE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "READ"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "READS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "READ_WRITE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REAL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REFERENCES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REGEXP"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RELEASE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RENAME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REPEAT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REPLACE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REQUIRE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RESIGNAL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RESTRICT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RETURN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REVOKE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RIGHT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RLIKE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SCHEMA"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SCHEMAS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SECOND_MICROSECOND"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SELECT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SENSITIVE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SEPARATOR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SET"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SHOW"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SIGNAL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SMALLINT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SPATIAL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SPECIFIC"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQLEXCEPTION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQLSTATE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQLWARNING"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_BIG_RESULT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_CALC_FOUND_ROWS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_SMALL_RESULT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SSL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "STARTING"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "STORED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "STRAIGHT_JOIN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TABLE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TERMINATED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "THEN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TINYBLOB"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TINYINT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TINYTEXT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TO"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TRAILING"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TRIGGER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TRUE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UNDO"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UNION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UNIQUE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UNLOCK"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UNSIGNED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UPDATE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "USAGE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "USE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "USING"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UTC_DATE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UTC_TIME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UTC_TIMESTAMP"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "VALUES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "VARBINARY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "VARCHAR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "VARCHARACTER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "VARYING"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "VIRTUAL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "WHEN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "WHERE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "WHILE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "WITH"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "WRITE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "XOR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "YEAR_MONTH"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ZEROFILL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "END_OF_RESERVED_KEYWORD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "START_OF_NON_RESERVED_KEYWORD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ACCOUNT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ACTION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "AFTER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "AGAINST"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "AGGREGATE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ALGORITHM"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ALWAYS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ANALYSE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ANY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ASCII"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "AT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "AUTOEXTEND_SIZE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "AUTO_INCREMENT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "AVG"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "AVG_ROW_LENGTH"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BACKUP"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BEGIN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BINLOG"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BIT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BLOCK"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BOOL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BOOLEAN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BTREE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BYTE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CACHE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CASCADED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CATALOG_NAME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CHAIN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CHANGED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CHANNEL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CHARSET"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CHECKSUM"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CIPHER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CLASS_ORIGIN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CLIENT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CLOSE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "COALESCE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CODE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "COLLATION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "COLUMNS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "COLUMN_FORMAT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "COLUMN_NAME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "COMMENT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "COMMIT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "COMMITTED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "COMPACT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "COMPLETION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "COMPRESSED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "COMPRESSION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CONCURRENT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CONNECTION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CONSISTENT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CONSTRAINT_CATALOG"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CONSTRAINT_NAME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CONSTRAINT_SCHEMA"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CONTAINS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CONTEXT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CPU"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CUBE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CURRENT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CURSOR_NAME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DATA"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DATAFILE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DATE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DATETIME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DAY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DEALLOCATE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DEFAULT_AUTH"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DEFINER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DELAY_KEY_WRITE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DES_KEY_FILE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DIAGNOSTICS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DIRECTORY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DISABLE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DISCARD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DISK"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DO"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DUMPFILE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DUPLICATE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DYNAMIC"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ENABLE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ENCRYPTION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "END"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ENDS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ENGINE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ENGINES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ENUM"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ERROR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ERRORS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ESCAPE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "EVENT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "EVENTS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "EVERY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "EXCHANGE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "EXECUTE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "EXPANSION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "EXPIRE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "EXPORT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "EXTENDED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "EXTENT_SIZE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FAST"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FAULTS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FIELDS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FILE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FILE_BLOCK_SIZE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FILTER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FIRST"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FIXED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FLUSH"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FOLLOWS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FORMAT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FOUND"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FULL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "FUNCTION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "GENERAL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "GEOMETRY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "GEOMETRYCOLLECTION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "GET_FORMAT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "GLOBAL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "GRANTS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "GROUP_REPLICATION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "HANDLER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "HASH"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "HELP"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "HOST"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "HOSTS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "HOUR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "IDENTIFIED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "IGNORE_SERVER_IDS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "IMPORT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INDEXES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INITIAL_SIZE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INSERT_METHOD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INSTALL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INSTANCE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "INVOKER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "IO"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "IO_THREAD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "IPC"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ISOLATION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ISSUER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "JSON"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "KEY_BLOCK_SIZE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LANGUAGE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LAST"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LEAVES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LESS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LEVEL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LINESTRING"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LIST"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LOCAL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LOCKS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LOGFILE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LOGS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_AUTO_POSITION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_CONNECT_RETRY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_DELAY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_HEARTBEAT_PERIOD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_HOST"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_LOG_FILE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_LOG_POS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_PASSWORD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_PORT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_RETRY_COUNT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_SERVER_ID"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_SSL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_SSL_CA"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_SSL_CAPATH"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_SSL_CERT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_SSL_CIPHER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_SSL_CRL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_SSL_CRLPATH"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_SSL_KEY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_TLS_VERSION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MASTER_USER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MAX_CONNECTIONS_PER_HOUR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MAX_QUERIES_PER_HOUR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MAX_ROWS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MAX_SIZE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MAX_STATEMENT_TIME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MAX_UPDATES_PER_HOUR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MAX_USER_CONNECTIONS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MEDIUM"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MEMORY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MERGE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MESSAGE_TEXT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MICROSECOND"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MIGRATE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MINUTE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MIN_ROWS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MODE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MODIFY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MONTH"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MULTILINESTRING"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MULTIPOINT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MULTIPOLYGON"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MUTEX"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MYSQL_ERRNO"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NAME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NAMES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NATIONAL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NCHAR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NDB"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NDBCLUSTER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NEVER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NEW"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NEXT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NO"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NODEGROUP"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NONBLOCKING"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NONE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NO_WAIT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NUMBER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "NVARCHAR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OFFSET"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OLD_PASSWORD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ONE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ONLY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OPEN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OPTIONS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OWNER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PACK_KEYS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PAGE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PARSER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PARSE_GCOL_EXPR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PARTIAL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PARTITIONING"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PARTITIONS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PASSWORD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PHASE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PLUGIN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PLUGINS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PLUGIN_DIR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "POINT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "POLYGON"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PORT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PRECEDES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PREPARE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PRESERVE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PREV"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PRIVILEGES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PROCESSLIST"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PROFILE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PROFILES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PROXY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "QUARTER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "QUERY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "QUICK"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "READ_ONLY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REBUILD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RECOVER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REDOFILE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REDO_BUFFER_SIZE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REDUNDANT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RELAY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RELAYLOG"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RELAY_LOG_FILE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RELAY_LOG_POS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RELAY_THREAD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RELOAD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REMOVE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REORGANIZE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REPAIR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REPEATABLE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REPLICATE_DO_DB"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REPLICATE_DO_TABLE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REPLICATE_IGNORE_DB"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REPLICATE_IGNORE_TABLE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REPLICATE_REWRITE_DB"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REPLICATE_WILD_DO_TABLE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REPLICATE_WILD_IGNORE_TABLE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REPLICATION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RESET"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RESTORE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RESUME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RETURNED_SQLSTATE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RETURNS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "REVERSE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ROLLBACK"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ROLLUP"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ROTATE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ROUTINE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ROW"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ROWS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ROW_COUNT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ROW_FORMAT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RTREE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SAVEPOINT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SCHEDULE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SCHEMA_NAME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SECOND"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SECURITY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SERIAL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SERIALIZABLE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SERVER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SESSION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SHARE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SHUTDOWN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SIGNED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SIMPLE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SLAVE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SLOW"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SNAPSHOT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SOCKET"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SOME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SONAME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SOUNDS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SOURCE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_AFTER_GTIDS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_AFTER_MTS_GAPS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_BEFORE_GTIDS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_BUFFER_RESULT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_CACHE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_NO_CACHE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_THREAD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_TSI_DAY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_TSI_HOUR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_TSI_MINUTE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_TSI_MONTH"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_TSI_QUARTER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_TSI_SECOND"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_TSI_WEEK"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SQL_TSI_YEAR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "STACKED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "START"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "STARTS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "STATS_AUTO_RECALC"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "STATS_PERSISTENT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "STATS_SAMPLE_PAGES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "STATUS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "STOP"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "STORAGE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "STRING"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SUBCLASS_ORIGIN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SUBJECT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SUBPARTITION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SUBPARTITIONS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SUPER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SUSPEND"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SWAPS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SWITCHES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TABLES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TABLESPACE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TABLE_CHECKSUM"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TABLE_NAME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TEMPORARY"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TEMPTABLE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TEXT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "THAN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TIME"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TIMESTAMP"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TIMESTAMPADD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TIMESTAMPDIFF"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TRANSACTION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TRIGGERS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TRUNCATE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TYPE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "TYPES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UNCOMMITTED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UNDEFINED"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UNDOFILE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UNDO_BUFFER_SIZE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UNICODE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UNINSTALL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UNKNOWN"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UNTIL"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UPGRADE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "USER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "USER_RESOURCES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "USE_FRM"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "VALIDATION"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "VALUE"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "VARIABLES"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "VIEW"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "WAIT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "WARNINGS"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "WEEK"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "WEIGHT_STRING"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "WITHOUT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "WORK"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "WRAPPER"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "X509"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "XA"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "XID"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "XML"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "YEAR"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "END_OF_NON_RESERVED_KEYWORD"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "EndOfFile"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UnknownToken"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CustomDelimiter"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SingleLineComment"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MultiLineComment"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ExecutionComment"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "WhiteSpace"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LineBreak"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "StringLiteral"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "HexLiteral"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "BitLiteral"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "IntegerLiteral"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DecimalLiteral"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "RealLiteral"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Identifier"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UserVariableIdentifier"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "MacroIdentifier"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Plus"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Minus"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Asterisk"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Percent"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Slash"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Colon"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Dot"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "SemiColon"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Comma"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Pound"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OpenParenthesesPound"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "PoundCloseParentheses"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Backslash"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "QuestionMark"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ColonEqual"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "AtAt"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "AtAtGlobalDot"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "AtAtSessionDot"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Tilde"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Caret"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Bar"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Equal"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LessEqualGreater"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "GreaterEqual"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Greater"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LessEqual"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "Less"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LessGreater"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "LessLess"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "GreaterGreater"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OpenParentheses"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CloseParentheses"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "OpenBrace"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "CloseBrace"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "DELIMITER_STATEMENT"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "UNIQUE_KEY"
+    }
+  ],
+  "inline": [
+    "Statement",
+    "Schema",
+    "CharSet"
+  ],
+  "supertypes": [
+    "Statement"
+  ]
+}
+

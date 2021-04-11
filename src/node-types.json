@@ -1,0 +1,526 @@
+[
+  {
+    "type": "Statement",
+    "named": true,
+    "subtypes": [
+      {
+        "type": "BinLogStatement",
+        "named": true
+      },
+      {
+        "type": "CreateSchemaStatement",
+        "named": true
+      }
+    ]
+  },
+  {
+    "type": "BinLogStatement",
+    "named": true,
+    "fields": {
+      "binLogToken": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "BINLOG",
+            "named": true
+          }
+        ]
+      },
+      "str": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "StringLiteral",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "CharacterSetNameOrDefault",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "BINARY",
+          "named": true
+        },
+        {
+          "type": "DEFAULT",
+          "named": true
+        },
+        {
+          "type": "Identifier",
+          "named": true
+        },
+        {
+          "type": "StringLiteral",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "CollationNameOrDefault",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "DEFAULT",
+          "named": true
+        },
+        {
+          "type": "Identifier",
+          "named": true
+        },
+        {
+          "type": "StringLiteral",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "CreateSchemaOptionList",
+    "named": true,
+    "fields": {
+      "item": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "DefaultCharacterSet",
+            "named": true
+          },
+          {
+            "type": "DefaultCollate",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "CreateSchemaStatement",
+    "named": true,
+    "fields": {
+      "createSchemaOptionList": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "CreateSchemaOptionList",
+            "named": true
+          }
+        ]
+      },
+      "createToken": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "CREATE",
+            "named": true
+          }
+        ]
+      },
+      "identifier": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "Identifier",
+            "named": true
+          }
+        ]
+      },
+      "ifNotExists": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "IfNotExists",
+            "named": true
+          }
+        ]
+      },
+      "schemaToken": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "DATABASE",
+            "named": true
+          },
+          {
+            "type": "SCHEMA",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "DefaultCharacterSet",
+    "named": true,
+    "fields": {
+      "characterSetName": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "CharacterSetNameOrDefault",
+            "named": true
+          }
+        ]
+      },
+      "characterSetToken": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "CHARACTER",
+            "named": true
+          },
+          {
+            "type": "CHARSET",
+            "named": true
+          },
+          {
+            "type": "SET",
+            "named": true
+          }
+        ]
+      },
+      "defaultToken": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "DEFAULT",
+            "named": true
+          }
+        ]
+      },
+      "equalToken": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "Equal",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "DefaultCollate",
+    "named": true,
+    "fields": {
+      "collateToken": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "COLLATE",
+            "named": true
+          }
+        ]
+      },
+      "collationName": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "CollationNameOrDefault",
+            "named": true
+          }
+        ]
+      },
+      "defaultToken": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "DEFAULT",
+            "named": true
+          }
+        ]
+      },
+      "equalToken": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "Equal",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "DelimiterStatement",
+    "named": true,
+    "fields": {
+      "customDelimiter": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "CustomDelimiter",
+            "named": true
+          }
+        ]
+      },
+      "delimiterStart": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "DELIMITER_STATEMENT",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "IfNotExists",
+    "named": true,
+    "fields": {
+      "existsToken": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "EXISTS",
+            "named": true
+          }
+        ]
+      },
+      "ifToken": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "IF",
+            "named": true
+          }
+        ]
+      },
+      "notToken": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "NOT",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "LeadingStatement",
+    "named": true,
+    "fields": {
+      "customDelimiter": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "CustomDelimiter",
+            "named": true
+          }
+        ]
+      },
+      "semiColonToken": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "SemiColon",
+            "named": true
+          }
+        ]
+      },
+      "statement": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "Statement",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "SourceFile",
+    "named": true,
+    "fields": {
+      "statement": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "DelimiterStatement",
+            "named": true
+          },
+          {
+            "type": "LeadingStatement",
+            "named": true
+          },
+          {
+            "type": "TrailingStatement",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "TrailingStatement",
+    "named": true,
+    "fields": {
+      "customDelimiter": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "CustomDelimiter",
+            "named": true
+          }
+        ]
+      },
+      "semiColonToken": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "SemiColon",
+            "named": true
+          }
+        ]
+      },
+      "statement": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "Statement",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "BINARY",
+    "named": true
+  },
+  {
+    "type": "BINLOG",
+    "named": true
+  },
+  {
+    "type": "CHARACTER",
+    "named": true
+  },
+  {
+    "type": "CHARSET",
+    "named": true
+  },
+  {
+    "type": "COLLATE",
+    "named": true
+  },
+  {
+    "type": "CREATE",
+    "named": true
+  },
+  {
+    "type": "CustomDelimiter",
+    "named": true
+  },
+  {
+    "type": "DATABASE",
+    "named": true
+  },
+  {
+    "type": "DEFAULT",
+    "named": true
+  },
+  {
+    "type": "DELIMITER_STATEMENT",
+    "named": true
+  },
+  {
+    "type": "EXISTS",
+    "named": true
+  },
+  {
+    "type": "Equal",
+    "named": true
+  },
+  {
+    "type": "ExecutionComment",
+    "named": true
+  },
+  {
+    "type": "IF",
+    "named": true
+  },
+  {
+    "type": "Identifier",
+    "named": true
+  },
+  {
+    "type": "LineBreak",
+    "named": true
+  },
+  {
+    "type": "MultiLineComment",
+    "named": true
+  },
+  {
+    "type": "NOT",
+    "named": true
+  },
+  {
+    "type": "SCHEMA",
+    "named": true
+  },
+  {
+    "type": "SET",
+    "named": true
+  },
+  {
+    "type": "SemiColon",
+    "named": true
+  },
+  {
+    "type": "SingleLineComment",
+    "named": true
+  },
+  {
+    "type": "StringLiteral",
+    "named": true
+  },
+  {
+    "type": "WhiteSpace",
+    "named": true
+  }
+]

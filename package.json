@@ -1,0 +1,22 @@
+{
+  "name": "tree-sitter-external-scanner-incomplete-parse",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bindings/node",
+  "scripts": {
+    "build": "tree-sitter generate && node-gyp configure && node-gyp build",
+    "test": "node ./test.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "graceful-fs": "^4.2.6",
+    "node-gyp": "^8.0.0",
+    "tape": "^5.2.2",
+    "tree-sitter-cli": "^0.19.4"
+  },
+  "dependencies": {
+    "nan": "^2.14.2",
+    "tree-sitter": "^0.19.0"
+  }
+}
