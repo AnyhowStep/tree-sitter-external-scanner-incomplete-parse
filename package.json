@@ -5,7 +5,8 @@
   "main": "bindings/node",
   "scripts": {
     "build": "tree-sitter generate && node-gyp configure && node-gyp build",
-    "test": "node ./test.js"
+    "test": "node ./test.js",
+    "parse": "tree-sitter parse test.sql"
   },
   "author": "",
   "license": "ISC",
