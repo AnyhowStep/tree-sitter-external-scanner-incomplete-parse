@@ -10,7 +10,7 @@ Notes:
 + An external scanner is used (see [src/scanner.cc](src/scanner.cc))
 + See [grammar.js](grammar.js) for the grammar
 + See [test.js](test.js), which contains the repro, and some comments
-+ See [test.sql], which contains the input file for `tree-sitter parse`
++ See [test.sql](test.sql), which contains the input file for `tree-sitter parse`
 
 -----
 
