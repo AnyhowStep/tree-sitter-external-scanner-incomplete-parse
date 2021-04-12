@@ -39,50 +39,54 @@ namespace {
             }
         }
 
-        bool tryScanOthers (TSLexer *lexer, const bool *valid_symbols) {
-            if (tryScanStringCaseInsensitive(bufferedLexer, "DELIMITER ")) {
+        bool tryScanOthers (TmpLexer &lexer, const bool *valid_symbols) {
+            TmpLexer tmp(lexer);
+
+            if (tryScanStringCaseInsensitive(tmp, "DELIMITER ")) {
                 expectCustomDelimiter = true;
 
-                return lexerResult(lexer, valid_symbols, TokenType::DELIMITER_STATEMENT);
+                return lexerResult(tmp.lexer.lexer, valid_symbols, TokenType::DELIMITER_STATEMENT);
             }
 
-            auto tokenType = tryScanIdentifierOrKeywordOrNumberLiteral(bufferedLexer, valid_symbols, customDelimiter);
+            auto tokenType = tryScanIdentifierOrKeywordOrNumberLiteral(tmp, valid_symbols, customDelimiter);
             if (tokenType < 0) {
-                if (bufferedLexer.isEof(0)) {
+                if (tmp.isEof(0)) {
                     return false;
                 }
-                bufferedLexer.advance();
-                bufferedLexer.markEnd();
-                return lexerForcedResult(lexer, TokenType::UnknownToken);
+                tmp.advance();
+                tmp.markEnd();
+                return lexerForcedResult(tmp.lexer.lexer, TokenType::UnknownToken);
             }
 
-            return lexerResult(lexer, valid_symbols, static_cast<TokenType>(tokenType));
+            return lexerResult(tmp.lexer.lexer, valid_symbols, static_cast<TokenType>(tokenType));
         }
 
-        bool scanDelimiter (TSLexer *lexer, const bool *valid_symbols) {
-            //Skip leading spaces
-            if (bufferedLexer.peek(0) == CharacterCodes::space) {
-                bufferedLexer.advance();
+        bool scanDelimiter (TmpLexer &lexer, const bool *valid_symbols) {
+            TmpLexer tmp(lexer);
 
-                while (bufferedLexer.peek(0) == CharacterCodes::space) {
-                    bufferedLexer.advance();
+            //Skip leading spaces
+            if (tmp.peek(0) == CharacterCodes::space) {
+                tmp.advance();
+
+                while (tmp.peek(0) == CharacterCodes::space) {
+                    tmp.advance();
                 }
 
-                bufferedLexer.markEnd();
-                return lexerResult(lexer, valid_symbols, TokenType::WhiteSpace);
+                tmp.markEnd();
+                return lexerResult(tmp.lexer.lexer, valid_symbols, TokenType::WhiteSpace);
             }
 
-            if (bufferedLexer.isEof(0)) {
-                bufferedLexer.advance();
-                bufferedLexer.markEnd();
-                return lexerEofResult(lexer);
+            if (tmp.isEof(0)) {
+                tmp.advance();
+                tmp.markEnd();
+                return lexerEofResult(tmp.lexer.lexer);
             }
 
-            if (isLineBreak(bufferedLexer.peek(0))) {
+            if (isLineBreak(tmp.peek(0))) {
                 //Cannot have delimiter of length zero
-                bufferedLexer.advance();
-                bufferedLexer.markEnd();
-                return lexerForcedResult(lexer, TokenType::LineBreak);
+                tmp.advance();
+                tmp.markEnd();
+                return lexerForcedResult(tmp.lexer.lexer, TokenType::LineBreak);
             }
 
             /**
@@ -105,8 +109,8 @@ namespace {
              * unless the entire delimiter is whitespace.
              */
             customDelimiter.clear();
-            while (!bufferedLexer.isEof(0) && !isLineBreak(bufferedLexer.peek(0))) {
-                customDelimiter += bufferedLexer.advance();
+            while (!tmp.isEof(0) && !isLineBreak(tmp.peek(0))) {
+                customDelimiter += tmp.advance();
             }
 
             if (customDelimiter.size() == 1 && customDelimiter[0] == ';') {
@@ -117,174 +121,175 @@ namespace {
             }
 
             expectCustomDelimiter = false;
-            bufferedLexer.markEnd();
-            return lexerResult(lexer, valid_symbols, TokenType::CustomDelimiter);
+            tmp.markEnd();
+            return lexerResult(tmp.lexer.lexer, valid_symbols, TokenType::CustomDelimiter);
         }
 
         bool scan(TSLexer *lexer, const bool *valid_symbols) {
             bufferedLexer.setLexer(lexer);
-            bufferedLexer.markEnd();
+
+            TmpLexer tmp(bufferedLexer);
 
             if (expectCustomDelimiter) {
-                return scanDelimiter(lexer, valid_symbols);
+                return scanDelimiter(tmp, valid_symbols);
             }
 
             if (customDelimiter.size() > 0) {
-                if (tryScanString(bufferedLexer, customDelimiter)) {
+                if (tryScanString(tmp, customDelimiter)) {
                     return lexerResult(lexer, valid_symbols, TokenType::CustomDelimiter);
                 }
             }
 
-            if (isWhiteSpace(bufferedLexer.peek(0))) {
-                bufferedLexer.advance();
+            if (isWhiteSpace(tmp.peek(0))) {
+                tmp.advance();
 
-                while (isWhiteSpace(bufferedLexer.peek(0))) {
-                    bufferedLexer.advance();
+                while (isWhiteSpace(tmp.peek(0))) {
+                    tmp.advance();
                 }
 
-                bufferedLexer.markEnd();
+                tmp.markEnd();
                 return lexerResult(lexer, valid_symbols, TokenType::WhiteSpace);
             }
 
-            char ch = bufferedLexer.peek(0);
+            char ch = tmp.peek(0);
 
             if (ch == CharacterCodes::carriageReturn) {
-                if (bufferedLexer.peek(1) == CharacterCodes::lineFeed) {
-                    bufferedLexer.advance();
-                    bufferedLexer.advance();
+                if (tmp.peek(1) == CharacterCodes::lineFeed) {
+                    tmp.advance();
+                    tmp.advance();
 
                     //\r\n
-                    bufferedLexer.markEnd();
+                    tmp.markEnd();
                     return lexerResult(lexer, valid_symbols, TokenType::LineBreak);
                 }
 
-                bufferedLexer.advance();
+                tmp.advance();
 
                 //\r
-                bufferedLexer.markEnd();
+                tmp.markEnd();
                 return lexerResult(lexer, valid_symbols, TokenType::LineBreak);
             }
 
             if (ch == CharacterCodes::lineFeed) {
-                bufferedLexer.advance();
+                tmp.advance();
 
                 //\n
-                bufferedLexer.markEnd();
+                tmp.markEnd();
                 return lexerResult(lexer, valid_symbols, TokenType::LineBreak);
             }
 
             //https://dev.mysql.com/doc/refman/5.7/en/hexadecimal-literals.html
             if (ch == CharacterCodes::x || ch == CharacterCodes::X) {
-                if (bufferedLexer.peek(1) == CharacterCodes::singleQuote) {
-                    bufferedLexer.advance();
-                    if (tryScanQuotedString(bufferedLexer)) {
+                if (tmp.peek(1) == CharacterCodes::singleQuote) {
+                    tmp.advance();
+                    if (tryScanQuotedString(tmp)) {
                         return lexerResult(lexer, valid_symbols, TokenType::HexLiteral);
                     } else {
-                        bufferedLexer.markEnd();
+                        tmp.markEnd();
                         return lexerEofResult(lexer);
                     }
                 } else {
-                    return tryScanOthers(lexer, valid_symbols);
+                    return tryScanOthers(tmp, valid_symbols);
                 }
             }
 
             if (ch == CharacterCodes::_0) {
-                if (bufferedLexer.peek(1) == CharacterCodes::x) {
+                if (tmp.peek(1) == CharacterCodes::x) {
                     //String length should never be empty, we confirmed existence of characters 0x
                     //And 0x... does not match custom delimiter (already tried to match custom delimiter above)
-                    auto str = tryScanUnquotedIdentifier(bufferedLexer, customDelimiter);
+                    auto str = tryScanUnquotedIdentifier(tmp, customDelimiter);
                     if (is0xHexLiteral(str)) {
                         return lexerResult(lexer, valid_symbols, TokenType::HexLiteral);
                     } else {
                         return lexerResult(lexer, valid_symbols, TokenType::Identifier);
                     }
                 } else {
-                    return tryScanOthers(lexer, valid_symbols);
+                    return tryScanOthers(tmp, valid_symbols);
                 }
             }
 
             //https://dev.mysql.com/doc/refman/5.7/en/bit-value-literals.html
             if (ch == CharacterCodes::b || ch == CharacterCodes::B) {
-                if (bufferedLexer.peek(1) == CharacterCodes::singleQuote) {
-                    bufferedLexer.advance();
-                    if (tryScanQuotedString(bufferedLexer)) {
+                if (tmp.peek(1) == CharacterCodes::singleQuote) {
+                    tmp.advance();
+                    if (tryScanQuotedString(tmp)) {
                         return lexerResult(lexer, valid_symbols, TokenType::BitLiteral);
                     } else {
-                        bufferedLexer.markEnd();
+                        tmp.markEnd();
                         return lexerEofResult(lexer);
                     }
                 } else {
-                    return tryScanOthers(lexer, valid_symbols);
+                    return tryScanOthers(tmp, valid_symbols);
                 }
             }
 
             if (ch == CharacterCodes::_0) {
-                if (bufferedLexer.peek(1) == CharacterCodes::b) {
+                if (tmp.peek(1) == CharacterCodes::b) {
                     //String length should never be empty, we confirmed existence of characters 0b
                     //And 0b... does not match custom delimiter (already tried to match custom delimiter above)
-                    auto str = tryScanUnquotedIdentifier(bufferedLexer, customDelimiter);
+                    auto str = tryScanUnquotedIdentifier(tmp, customDelimiter);
                     if (is0bBitLiteral(str)) {
                         return lexerResult(lexer, valid_symbols, TokenType::BitLiteral);
                     } else {
                         return lexerResult(lexer, valid_symbols, TokenType::Identifier);
                     }
                 } else {
-                    return tryScanOthers(lexer, valid_symbols);
+                    return tryScanOthers(tmp, valid_symbols);
                 }
             }
 
             switch (ch) {
                 case CharacterCodes::openBrace:
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
                     return lexerResult(lexer, valid_symbols, TokenType::OpenBrace);
                 case CharacterCodes::closeBrace:
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
                     return lexerResult(lexer, valid_symbols, TokenType::CloseBrace);
                 case CharacterCodes::openParen:
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
                     return lexerResult(lexer, valid_symbols, TokenType::OpenParentheses);
                 case CharacterCodes::closeParen:
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
                     return lexerResult(lexer, valid_symbols, TokenType::CloseParentheses);
                 case CharacterCodes::caret:
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
                     return lexerResult(lexer, valid_symbols, TokenType::Caret);
                 case CharacterCodes::asterisk:
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
                     return lexerResult(lexer, valid_symbols, TokenType::Asterisk);
                 case CharacterCodes::minus:
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
                     return lexerResult(lexer, valid_symbols, TokenType::Minus);
                 case CharacterCodes::plus:
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
                     return lexerResult(lexer, valid_symbols, TokenType::Plus);
                 case CharacterCodes::comma:
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
                     return lexerResult(lexer, valid_symbols, TokenType::Comma);
                 case CharacterCodes::bar:
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
                     return lexerResult(lexer, valid_symbols, TokenType::Bar);
                 case CharacterCodes::equals:
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
                     return lexerResult(lexer, valid_symbols, TokenType::Equal);
                 case CharacterCodes::semicolon:
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
                     return lexerResult(lexer, valid_symbols, TokenType::SemiColon);
                 case CharacterCodes::dot:
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
                     return lexerResult(lexer, valid_symbols, TokenType::Dot);
                 case CharacterCodes::lessThan:
                     //<
@@ -292,38 +297,38 @@ namespace {
                     //<>
                     //<=
                     //<=>
-                    switch (bufferedLexer.peek(1))
+                    switch (tmp.peek(1))
                     {
                         case CharacterCodes::lessThan:
-                            bufferedLexer.advance();
-                            bufferedLexer.advance();
-                            bufferedLexer.markEnd();
+                            tmp.advance();
+                            tmp.advance();
+                            tmp.markEnd();
                             return lexerResult(lexer, valid_symbols, TokenType::LessLess);
                         case CharacterCodes::greaterThan:
-                            bufferedLexer.advance();
-                            bufferedLexer.advance();
-                            bufferedLexer.markEnd();
+                            tmp.advance();
+                            tmp.advance();
+                            tmp.markEnd();
                             return lexerResult(lexer, valid_symbols, TokenType::LessGreater);
                         case CharacterCodes::equals:
-                            switch (bufferedLexer.peek(2))
+                            switch (tmp.peek(2))
                             {
                                 case CharacterCodes::greaterThan:
-                                    bufferedLexer.advance();
-                                    bufferedLexer.advance();
-                                    bufferedLexer.advance();
-                                    bufferedLexer.markEnd();
+                                    tmp.advance();
+                                    tmp.advance();
+                                    tmp.advance();
+                                    tmp.markEnd();
                                     return lexerResult(lexer, valid_symbols, TokenType::LessEqualGreater);
 
                                 default:
-                                    bufferedLexer.advance();
-                                    bufferedLexer.advance();
-                                    bufferedLexer.markEnd();
+                                    tmp.advance();
+                                    tmp.advance();
+                                    tmp.markEnd();
                                     return lexerResult(lexer, valid_symbols, TokenType::LessEqual);
                             }
 
                         default:
-                            bufferedLexer.advance();
-                            bufferedLexer.markEnd();
+                            tmp.advance();
+                            tmp.markEnd();
                             return lexerResult(lexer, valid_symbols, TokenType::Less);
                     }
                     break;
@@ -331,105 +336,105 @@ namespace {
                     //>
                     //>>
                     //>=
-                    switch (bufferedLexer.peek(1))
+                    switch (tmp.peek(1))
                     {
                         case CharacterCodes::greaterThan:
-                            bufferedLexer.advance();
-                            bufferedLexer.advance();
-                            bufferedLexer.markEnd();
+                            tmp.advance();
+                            tmp.advance();
+                            tmp.markEnd();
                             return lexerResult(lexer, valid_symbols, TokenType::GreaterGreater);
 
                         case CharacterCodes::equals:
-                            bufferedLexer.advance();
-                            bufferedLexer.advance();
-                            bufferedLexer.markEnd();
+                            tmp.advance();
+                            tmp.advance();
+                            tmp.markEnd();
                             return lexerResult(lexer, valid_symbols, TokenType::GreaterEqual);
 
                         default:
-                            bufferedLexer.advance();
-                            bufferedLexer.markEnd();
+                            tmp.advance();
+                            tmp.markEnd();
                             return lexerResult(lexer, valid_symbols, TokenType::Greater);
                     }
                     break;
                 case CharacterCodes::singleQuote:
-                    if (tryScanQuotedString(bufferedLexer)) {
+                    if (tryScanQuotedString(tmp)) {
                         return lexerResult(lexer, valid_symbols, TokenType::StringLiteral);
                     } else {
-                        bufferedLexer.markEnd();
+                        tmp.markEnd();
                         return lexerEofResult(lexer);
                     }
                 case CharacterCodes::slash:
-                    if (bufferedLexer.peek(1) == CharacterCodes::asterisk) {
-                        if (bufferedLexer.peek(2) == CharacterCodes::exclamation) {
-                            bufferedLexer.advance();
-                            bufferedLexer.advance();
-                            bufferedLexer.advance();
-                            if (tryScanTillEndOfMultiLineComment(bufferedLexer)) {
+                    if (tmp.peek(1) == CharacterCodes::asterisk) {
+                        if (tmp.peek(2) == CharacterCodes::exclamation) {
+                            tmp.advance();
+                            tmp.advance();
+                            tmp.advance();
+                            if (tryScanTillEndOfMultiLineComment(tmp)) {
                                 return lexerResult(lexer, valid_symbols, TokenType::ExecutionComment);
                             } else {
-                                bufferedLexer.markEnd();
+                                tmp.markEnd();
                                 return lexerEofResult(lexer);
                             }
                         } else {
-                            bufferedLexer.advance();
-                            bufferedLexer.advance();
-                            if (tryScanTillEndOfMultiLineComment(bufferedLexer)) {
+                            tmp.advance();
+                            tmp.advance();
+                            if (tryScanTillEndOfMultiLineComment(tmp)) {
                                 return lexerResult(lexer, valid_symbols, TokenType::MultiLineComment);
                             } else {
-                                bufferedLexer.markEnd();
+                                tmp.markEnd();
                                 return lexerEofResult(lexer);
                             }
                         }
                     } else {
-                        bufferedLexer.advance();
-                        bufferedLexer.markEnd();
+                        tmp.advance();
+                        tmp.markEnd();
                         return lexerResult(lexer, valid_symbols, TokenType::Slash);
                     }
                 case CharacterCodes::colon:
-                    if (bufferedLexer.peek(1) == CharacterCodes::equals) {
-                        bufferedLexer.advance();
-                        bufferedLexer.advance();
-                        bufferedLexer.markEnd();
+                    if (tmp.peek(1) == CharacterCodes::equals) {
+                        tmp.advance();
+                        tmp.advance();
+                        tmp.markEnd();
                         return lexerResult(lexer, valid_symbols, TokenType::ColonEqual);
                     }
 
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
                     return lexerResult(lexer, valid_symbols, TokenType::Colon);
 
                 case CharacterCodes::at:
-                    if (bufferedLexer.peek(1) == CharacterCodes::at) {
-                        bufferedLexer.advance();
-                        bufferedLexer.advance();
-                        bufferedLexer.markEnd();
-                        if (tryScanStringCaseInsensitive(bufferedLexer, "GLOBAL.")) {
+                    if (tmp.peek(1) == CharacterCodes::at) {
+                        tmp.advance();
+                        tmp.advance();
+                        tmp.markEnd();
+                        if (tryScanStringCaseInsensitive(tmp, "GLOBAL.")) {
                             return lexerResult(lexer, valid_symbols, TokenType::AtAtGlobalDot);
                         }
 
-                        if (tryScanStringCaseInsensitive(bufferedLexer, "SESSION.")) {
+                        if (tryScanStringCaseInsensitive(tmp, "SESSION.")) {
                             return lexerResult(lexer, valid_symbols, TokenType::AtAtSessionDot);
                         }
 
                         return lexerResult(lexer, valid_symbols, TokenType::AtAt);
                     } else if (
-                        bufferedLexer.peek(1) == CharacterCodes::doubleQuote ||
-                        bufferedLexer.peek(1) == CharacterCodes::backtick ||
-                        bufferedLexer.peek(1) == CharacterCodes::singleQuote
+                        tmp.peek(1) == CharacterCodes::doubleQuote ||
+                        tmp.peek(1) == CharacterCodes::backtick ||
+                        tmp.peek(1) == CharacterCodes::singleQuote
                     ) {
-                        bufferedLexer.advance();
-                        if (tryScanQuotedIdentifier(bufferedLexer)) {
+                        tmp.advance();
+                        if (tryScanQuotedIdentifier(tmp)) {
                             return lexerResult(lexer, valid_symbols, TokenType::UserVariableIdentifier);
                         } else {
-                            bufferedLexer.markEnd();
+                            tmp.markEnd();
                             return lexerEofResult(lexer);
                         }
                     } else if (
-                        isUnquotedIdentifierCharacter(bufferedLexer.peek(1))
+                        isUnquotedIdentifierCharacter(tmp.peek(1))
                     ) {
-                        bufferedLexer.advance();
-                        bufferedLexer.markEnd();
+                        tmp.advance();
+                        tmp.markEnd();
                         //This may be empty.
-                        auto str = tryScanUnquotedIdentifier(bufferedLexer, customDelimiter);
+                        auto str = tryScanUnquotedIdentifier(tmp, customDelimiter);
                         if (str.size() == 0) {
                             /**
                              * @todo Investigate why MySQL allows this,
@@ -458,23 +463,23 @@ namespace {
                          *  CREATE DEFINER=root @ FUNCTION FOO () RETURNS BOOLEAN RETURN TRUE;
                          * ```
                          */
-                        bufferedLexer.advance();
-                        bufferedLexer.markEnd();
+                        tmp.advance();
+                        tmp.markEnd();
                         return lexerResult(lexer, valid_symbols, TokenType::UserVariableIdentifier);
                     }
                 case CharacterCodes::doubleQuote:
                 case CharacterCodes::backtick:
-                    if (tryScanQuotedIdentifier(bufferedLexer)) {
+                    if (tryScanQuotedIdentifier(tmp)) {
                         return lexerResult(lexer, valid_symbols, TokenType::Identifier);
                     } else {
-                        bufferedLexer.markEnd();
+                        tmp.markEnd();
                         return lexerEofResult(lexer);
                     }
                 default:
                     break;
             }
 
-            return tryScanOthers(lexer, valid_symbols);
+            return tryScanOthers(tmp, valid_symbols);
         }
     };
 

@@ -123,5 +123,10 @@ module.exports = grammar({
             field("delimiterStart", $.DELIMITER_STATEMENT),
             field("customDelimiter", $.CustomDelimiter),
         ),
+
+        /**
+         * This is never used.
+         */
+        //dummy_rule: $ => /\w+/,
     },
 });

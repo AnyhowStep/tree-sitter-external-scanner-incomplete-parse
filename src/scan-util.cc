@@ -5,29 +5,31 @@
 #include "./token-kind.cc"
 
 namespace {
-    bool tryScanQuotedString (BufferedLexer &bufferedLexer) {
-        auto quote = bufferedLexer.advance();
+    bool tryScanQuotedString (TmpLexer &lexer) {
+        TmpLexer tmp(lexer);
+        auto quote = tmp.advance();
 
         //std::string result;
 
-        while (!bufferedLexer.isEof(0)) {
-            auto ch = bufferedLexer.peek(0);
+        while (!tmp.isEof(0)) {
+            auto ch = tmp.peek(0);
             if (ch == quote) {
-                if (bufferedLexer.peek(1) == quote) {
+                if (tmp.peek(1) == quote) {
                     //Strings can contain the quote char by using the quote char twice
-                    bufferedLexer.advance();
-                    bufferedLexer.advance();
+                    tmp.advance();
+                    tmp.advance();
                     //result += quote;
                 } else {
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
+                    lexer.index = tmp.index;
                     return true;
                     //return result;
                 }
             } else if (ch == CharacterCodes::backslash) {
-                bufferedLexer.advance();
+                tmp.advance();
                 //https://dev.mysql.com/doc/refman/5.7/en/string-literals.html
-                auto escapedCh = bufferedLexer.advance();
+                auto escapedCh = tmp.advance();
                 switch (escapedCh)
                 {
                     case CharacterCodes::_0:
@@ -60,8 +62,8 @@ namespace {
                         break;
                 }
             } else {
-                bufferedLexer.advance();
-                //result += bufferedLexer.advance();
+                tmp.advance();
+                //result += tmp.advance();
             }
         }
 
@@ -106,60 +108,66 @@ namespace {
         return std::regex_match(str, regex0bBitLiteral);
     }
 
-    bool tryScanTillEndOfMultiLineComment (BufferedLexer &bufferedLexer) {
-        while (!bufferedLexer.isEof(0)) {
+    bool tryScanTillEndOfMultiLineComment (TmpLexer &lexer) {
+        TmpLexer tmp(lexer);
+        while (!tmp.isEof(0)) {
             if (
-                bufferedLexer.peek(0) == CharacterCodes::asterisk &&
-                bufferedLexer.peek(1) == CharacterCodes::slash
+                tmp.peek(0) == CharacterCodes::asterisk &&
+                tmp.peek(1) == CharacterCodes::slash
             ) {
-                bufferedLexer.advance();
-                bufferedLexer.advance();
-                bufferedLexer.markEnd();
+                tmp.advance();
+                tmp.advance();
+                tmp.markEnd();
+                lexer.index = tmp.index;
                 return true;
             }
 
-            bufferedLexer.advance();
+            tmp.advance();
         }
 
         return false;
     }
 
-    bool tryScanString(BufferedLexer &bufferedLexer, std::string const &str, bool markEnd = true) {
+    bool tryScanString(TmpLexer &lexer, std::string const &str, bool markEnd = true) {
+        TmpLexer tmp(lexer);
         //Try to match all characters in the given 'str'
         for (size_t i=0; i<str.size(); ++i) {
             auto c = str[i];
-            if (bufferedLexer.peek(i) != c) {
+            if (tmp.peek(i) != c) {
                 return false;
             }
         }
 
         for (size_t i=0; i<str.size(); ++i) {
             //Consume the character in 'c'
-            bufferedLexer.advance();
+            tmp.advance();
         }
 
         if (markEnd) {
-            bufferedLexer.markEnd();
+            tmp.markEnd();
+            lexer.index = tmp.index;
         }
         return true;
     }
 
 
-    bool tryScanStringCaseInsensitive(BufferedLexer &bufferedLexer, std::string const &str) {
+    bool tryScanStringCaseInsensitive(TmpLexer &lexer, std::string const &str) {
+        TmpLexer tmp(lexer);
         //Try to match all characters in the given 'str'
         for (size_t i=0; i<str.size(); ++i) {
             auto c = str[i];
-            if (toupper(bufferedLexer.peek(i)) != toupper(c)) {
+            if (toupper(tmp.peek(i)) != toupper(c)) {
                 return false;
             }
         }
 
         for (size_t i=0; i<str.size(); ++i) {
             //Consume the character in 'c'
-            bufferedLexer.advance();
+            tmp.advance();
         }
 
-        bufferedLexer.markEnd();
+        tmp.markEnd();
+        lexer.index = tmp.index;
         return true;
     }
 
@@ -167,54 +175,60 @@ namespace {
      * Unquoted identifiers can be interrupted by custom delimiter.
      * If returned length is zero, there is no unquoted identifier.
      */
-    std::string tryScanUnquotedIdentifier (BufferedLexer &bufferedLexer, std::string const &customDelimiter) {
+    std::string tryScanUnquotedIdentifier (TmpLexer &lexer, std::string const &customDelimiter) {
+        TmpLexer tmp(lexer);
         std::string result;
 
-        while (!bufferedLexer.isEof(0)) {
+        while (!tmp.isEof(0)) {
             if (customDelimiter.size() > 0) {
                 if (result.size() > 0) {
-                    bufferedLexer.markEnd();
+                    tmp.markEnd();
+                    lexer.index = tmp.index;
                 }
-                if (tryScanString(bufferedLexer, customDelimiter, /* markEnd */false)) {
+                if (tryScanString(tmp, customDelimiter, /* markEnd */false)) {
                     //Interrupted by custom delimiter
                     return result;
                 }
             }
 
-            auto ch = bufferedLexer.peek(0);
+            auto ch = tmp.peek(0);
             if (isUnquotedIdentifierCharacter(ch)) {
-                result += bufferedLexer.advance();
+                result += tmp.advance();
             } else {
                 if (result.size() > 0) {
-                    bufferedLexer.markEnd();
+                    tmp.markEnd();
+                    lexer.index = tmp.index;
                 }
                 return result;
             }
         }
 
         if (result.size() > 0) {
-            bufferedLexer.markEnd();
+            tmp.markEnd();
+            lexer.index = tmp.index;
         }
         return result;
     }
 
-    bool tryScanQuotedIdentifier (BufferedLexer &bufferedLexer) {
-        auto quote = bufferedLexer.advance();
+    bool tryScanQuotedIdentifier (TmpLexer &lexer) {
+        TmpLexer tmp(lexer);
+        auto quote = tmp.advance();
 
-        while (!bufferedLexer.isEof(0)) {
-            auto ch = bufferedLexer.peek(0);
+        while (!tmp.isEof(0)) {
+            auto ch = tmp.peek(0);
             if (ch == quote) {
-                if (bufferedLexer.peek(1) == quote) {
+                if (tmp.peek(1) == quote) {
                     //Identifiers can contain the quote char by using the quote char twice
-                    bufferedLexer.advance();
-                    bufferedLexer.advance();
+                    tmp.advance();
+                    tmp.advance();
                 } else {
-                    bufferedLexer.advance();
-                    bufferedLexer.markEnd();
+                    tmp.advance();
+                    tmp.markEnd();
+                    lexer.index = tmp.index;
                     return true;
                 }
             } else {
-                bufferedLexer.advance();
+                tmp.advance();
             }
         }
 
@@ -239,83 +253,90 @@ namespace {
         return std::regex_match(str, regexDigitEDigit);
     }
 
-    bool tryScanDigitEDigit (BufferedLexer &bufferedLexer) {
+    bool tryScanDigitEDigit (TmpLexer &lexer) {
+        TmpLexer tmp(lexer);
         //Digit
-        if (!isDigit(bufferedLexer.peek(0))) {
+        if (!isDigit(tmp.peek(0))) {
             return false;
         }
-        bufferedLexer.advance();
+        tmp.advance();
 
-        while (isDigit(bufferedLexer.peek(0))) {
-            bufferedLexer.advance();
+        while (isDigit(tmp.peek(0))) {
+            tmp.advance();
         }
 
         //E
-        auto chE = bufferedLexer.peek(0);
+        auto chE = tmp.peek(0);
         if (chE != CharacterCodes::e && chE != CharacterCodes::E) {
             return false;
         }
-        bufferedLexer.advance();
+        tmp.advance();
 
         //Digit
-        if (!isDigit(bufferedLexer.peek(0))) {
+        if (!isDigit(tmp.peek(0))) {
             return false;
         }
-        bufferedLexer.advance();
+        tmp.advance();
 
-        while (isDigit(bufferedLexer.peek(0))) {
-            bufferedLexer.advance();
+        while (isDigit(tmp.peek(0))) {
+            tmp.advance();
         }
 
-        bufferedLexer.markEnd();
+        tmp.markEnd();
+        lexer.index = tmp.index;
         return true;
     }
 
-    bool tryScanNumberFractionalPart (BufferedLexer &bufferedLexer) {
-        if (bufferedLexer.peek(0) != CharacterCodes::dot) {
+    bool tryScanNumberFractionalPart (TmpLexer &lexer) {
+        TmpLexer tmp(lexer);
+        if (tmp.peek(0) != CharacterCodes::dot) {
             return false;
         }
-        bufferedLexer.advance();
+        tmp.advance();
 
-        while (isDigit(bufferedLexer.peek(0))) {
-            bufferedLexer.advance();
+        while (isDigit(tmp.peek(0))) {
+            tmp.advance();
         }
 
-        bufferedLexer.markEnd();
+        tmp.markEnd();
+        lexer.index = tmp.index;
         return true;
     }
 
-    bool tryScanNumberExponent2 (BufferedLexer &bufferedLexer) {
+    bool tryScanNumberExponent2 (TmpLexer &lexer) {
+        TmpLexer tmp(lexer);
         /**
          * Optional +/- prefix for exponent
          */
-        auto chPrefix = bufferedLexer.peek(0);
+        auto chPrefix = tmp.peek(0);
         if (chPrefix == CharacterCodes::plus || chPrefix == CharacterCodes::minus) {
-            bufferedLexer.advance();
+            tmp.advance();
         }
 
-        auto chFirstDigit = bufferedLexer.peek(0);
+        auto chFirstDigit = tmp.peek(0);
         if (!isDigit(chFirstDigit)) {
             return false;
         }
-        bufferedLexer.advance();
+        tmp.advance();
 
-        while (isDigit(bufferedLexer.peek(0))) {
-            bufferedLexer.advance();
+        while (isDigit(tmp.peek(0))) {
+            tmp.advance();
         }
 
-        bufferedLexer.markEnd();
+        tmp.markEnd();
+        lexer.index = tmp.index;
         return true;
     }
 
-    bool tryScanNumberExponent (BufferedLexer &bufferedLexer) {
-        auto chE = bufferedLexer.peek(0);
+    bool tryScanNumberExponent (TmpLexer &lexer) {
+        TmpLexer tmp(lexer);
+        auto chE = tmp.peek(0);
         if (chE != CharacterCodes::e && chE != CharacterCodes::E) {
             return false;
         }
-        bufferedLexer.advance();
+        tmp.advance();
 
-        return tryScanNumberExponent2(bufferedLexer);
+        return tryScanNumberExponent2(tmp);
     }
 
     int tryGetKeywordTokenType (std::string const &str) {
@@ -327,13 +348,13 @@ namespace {
         }
     }
 
-    int tryScanIdentifierOrKeywordOrNumberLiteral (BufferedLexer &bufferedLexer, const bool *valid_symbols, std::string const &customDelimiter) {
-        if (!isUnquotedIdentifierCharacter(bufferedLexer.peek(0))) {
-            //std::cout << "tryScanIdentifierOrKeywordOrNumberLiteral: -FAIL- " << bufferedLexer.peek(0) << std::endl;
+    int tryScanIdentifierOrKeywordOrNumberLiteral (TmpLexer &lexer, const bool *valid_symbols, std::string const &customDelimiter) {
+        TmpLexer tmp(lexer);
+        if (!isUnquotedIdentifierCharacter(tmp.peek(0))) {
             return -1;
         }
 
-        if (tryScanDigitEDigit(bufferedLexer)) {
+        if (tryScanDigitEDigit(tmp)) {
             return TokenType::RealLiteral;
         }
 
@@ -346,17 +367,19 @@ namespace {
          * + `0e0`
          * + `0E0`
          */
-        auto str = tryScanUnquotedIdentifier(bufferedLexer, customDelimiter);
+        auto str = tryScanUnquotedIdentifier(tmp, customDelimiter);
         //std::cout << "tryScanIdentifierOrKeywordOrNumberLiteral: " << str << std::endl;
 
         if (str.size() == 0) {
             //No unquoted identifier.
             //We already checked peek(0) is unquoted identifier character.
             //So, we were interrupted by custom delimiter.
-            if (tryScanString(bufferedLexer, customDelimiter)) {
+            if (tryScanString(tmp, customDelimiter)) {
                 return TokenType::CustomDelimiter;
             } else {
-                //I don't know what this is, this should never happen
+                //I don't know what this is, this should never happen.
+                //This only happens if `customDelimiter.size() == 0`.
+                //But, if this is the case, then we have a bug in our code.
                 return -1;
             }
         }
@@ -371,8 +394,8 @@ namespace {
              * + 123.123e123
              * + 123.123e-123
              */
-            if (tryScanNumberFractionalPart(bufferedLexer)) {
-                if (tryScanNumberExponent(bufferedLexer)) {
+            if (tryScanNumberFractionalPart(tmp)) {
+                if (tryScanNumberExponent(tmp)) {
                     return TokenType::RealLiteral;
                 } else {
                     return TokenType::DecimalLiteral;
@@ -389,7 +412,7 @@ namespace {
         }
 
         if (isDigitE(str)) {
-            if (tryScanNumberExponent2(bufferedLexer)) {
+            if (tryScanNumberExponent2(tmp)) {
                 return TokenType::RealLiteral;
             } else {
                 return TokenType::Identifier;

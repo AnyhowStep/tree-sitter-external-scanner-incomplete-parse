@@ -4,13 +4,15 @@
 #include <deque>
 
 namespace {
+
     struct BufferedLexer {
         std::deque<char> buffer;
         TSLexer *lexer;
 
-        void setLexer(TSLexer *lexer) {
+        void setLexer (TSLexer *lexer) {
             this->buffer.clear();
             this->lexer = lexer;
+            markEnd();
         }
 
         char peek (int offset) {
@@ -42,8 +44,44 @@ namespace {
             return result;
         }
 
+        void advanceN (int n) {
+            for (int i=0; i<n; ++i) {
+                advance();
+            }
+        }
+
         void markEnd () {
             lexer->mark_end(lexer);
+        }
+    };
+    struct TmpLexer {
+        BufferedLexer &lexer;
+        int index = 0;
+
+        TmpLexer (BufferedLexer &lexer) : lexer(lexer) {
+        }
+
+        TmpLexer (TmpLexer &lexer) : lexer(lexer.lexer), index(lexer.index) {
+        }
+
+        char peek (int offset) {
+            return lexer.peek(index+offset);
+        }
+
+        bool isEof (int offset) {
+            return lexer.isEof(index+offset);
+        }
+
+        char advance () {
+            auto result = peek(0);
+            ++index;
+            return result;
+        }
+
+        void markEnd () {
+            lexer.advanceN(index);
+            lexer.markEnd();
+            index = 0;
         }
     };
 }
