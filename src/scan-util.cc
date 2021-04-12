@@ -210,9 +210,30 @@ namespace {
         return result;
     }
 
-    bool tryScanQuotedIdentifier (TmpLexer &lexer) {
+    /**
+     * If it does not encounter a closing quote,
+     * it will assume the position just before
+     * the first non-unquoted identifier character was the intended end of the identifier.
+     *
+     * Then, we push the actual error reporting down the pipeline.
+     *
+     * -----
+     *
+     * Note that quoted identifiers can contain line breaks without it being an error,
+     * if closed properly.
+     *
+     * The following is valid MySQL,
+     * ```sql
+     *  CREATE SCHEMA `A
+     *  B
+     *  C`;
+     * ```
+     */
+    void scanQuotedIdentifier (TmpLexer &lexer) {
         TmpLexer tmp(lexer);
         auto quote = tmp.advance();
+
+        bool foundNonUnquotedIdentifierCharacter = false;
 
         while (!tmp.isEof(0)) {
             auto ch = tmp.peek(0);
@@ -222,17 +243,36 @@ namespace {
                     tmp.advance();
                     tmp.advance();
                 } else {
+                    //We closed the token properly.
                     tmp.advance();
                     tmp.markEnd();
                     lexer.index = tmp.index;
-                    return true;
+                    return;
                 }
+            } else if (!isUnquotedIdentifierCharacter(ch)) {
+                //Tentatively mark the end of the token here.
+                //If we do not close the token properly,
+                //this will be the end of our token for parsing purposes.
+                //We push error reporting down the pipeline.
+                if (!foundNonUnquotedIdentifierCharacter) {
+                    tmp.markEnd();
+                    lexer.index = tmp.index;
+                    foundNonUnquotedIdentifierCharacter = true;
+                }
+                tmp.advance();
             } else {
                 tmp.advance();
             }
         }
 
-        return false;
+        if (!foundNonUnquotedIdentifierCharacter) {
+            //We found an EOF and didn't see a line break before.
+            //So, we mark the end of the token here.
+            //We push error reporting down the pipeline.
+            tmp.markEnd();
+            lexer.index = tmp.index;
+        }
+        return;
     }
 
     std::regex regexDigitE(

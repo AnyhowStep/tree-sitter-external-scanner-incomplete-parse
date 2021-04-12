@@ -126,6 +126,10 @@ namespace {
         }
 
         bool scan(TSLexer *lexer, const bool *valid_symbols) {
+            if (lexer->eof(lexer)) {
+                lexer->mark_end(lexer);
+                return lexerResult(lexer, valid_symbols, TokenType::EndOfFile);
+            }
             bufferedLexer.setLexer(lexer);
 
             TmpLexer tmp(bufferedLexer);
@@ -422,12 +426,8 @@ namespace {
                         tmp.peek(1) == CharacterCodes::singleQuote
                     ) {
                         tmp.advance();
-                        if (tryScanQuotedIdentifier(tmp)) {
-                            return lexerResult(lexer, valid_symbols, TokenType::UserVariableIdentifier);
-                        } else {
-                            tmp.markEnd();
-                            return lexerEofResult(lexer);
-                        }
+                        scanQuotedIdentifier(tmp);
+                        return lexerResult(lexer, valid_symbols, TokenType::UserVariableIdentifier);
                     } else if (
                         isUnquotedIdentifierCharacter(tmp.peek(1))
                     ) {
@@ -469,12 +469,8 @@ namespace {
                     }
                 case CharacterCodes::doubleQuote:
                 case CharacterCodes::backtick:
-                    if (tryScanQuotedIdentifier(tmp)) {
-                        return lexerResult(lexer, valid_symbols, TokenType::Identifier);
-                    } else {
-                        tmp.markEnd();
-                        return lexerEofResult(lexer);
-                    }
+                    scanQuotedIdentifier(tmp);
+                    return lexerResult(lexer, valid_symbols, TokenType::Identifier);
                 default:
                     break;
             }
